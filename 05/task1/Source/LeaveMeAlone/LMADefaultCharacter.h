@@ -6,12 +6,9 @@
 #include "GameFramework/Character.h"
 #include "LMADefaultCharacter.generated.h"
 
-// будет отвечать за компонент камеры
+
 class UCameraComponent;
-/*
-	используется для автоматического управления поведением камеры в
-	ситуациях, когда она становится закрытой
-*/
+
 class USpringArmComponent;
 
 UCLASS()
@@ -50,10 +47,10 @@ public:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 private:
-	float YRotation = -75.0f;	// отвечает за поворот камеры по оси Y.
-	float ArmLength = 1400.0f;	// отвечает за длину штатива.
-	float FOV = 55.0f;			// отвечает за поле зрения камеры.
+	float YRotation = -75.0f;	
+	float ArmLength = 1400.0f;	
+	float FOV = 55.0f;			
 
-	void MoveForward(float Value);	// движение персонажа по оси X
-	void MoveRight(float Value);	// движение персонажа по оси Y
+	void MoveForward(float Value);	
+	void MoveRight(float Value);	
 };
