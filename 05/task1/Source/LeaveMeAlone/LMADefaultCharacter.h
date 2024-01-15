@@ -36,6 +36,17 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Cursor")
 	FVector CursorSize = FVector(20.0f, 40.0f, 40.0f);
 
+
+	UPROPERTY(EditDefaultsOnly, Category = "Camera Zoom")
+	float MaxZoomInDistance = 500.0f;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Camera Zoom")
+	float MaxZoomOutDistance = 2000.0f;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Camera Zoom")
+	float ZoomSpeed = 100.0f;
+
+
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
@@ -45,7 +56,8 @@ public:
 
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
-
+	// Called when the mouse wheel is scrolled
+	virtual void MouseWheelZoom(float DeltaWheel) override; 
 private:
 	float YRotation = -75.0f;	
 	float ArmLength = 1400.0f;	

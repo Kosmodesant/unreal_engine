@@ -1,6 +1,5 @@
 // LeaveMeAlone Game by Netologiya. All Rights Reserved.
 
-
 #include "LMADefaultCharacter.h"
 #include "Camera/CameraComponent.h"
 #include "GameFramework/SpringArmComponent.h"
@@ -12,23 +11,15 @@
 // Sets default values
 ALMADefaultCharacter::ALMADefaultCharacter()
 {
- 	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
+	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
 	SpringArmComponent = CreateDefaultSubobject<USpringArmComponent>("SpringArm");
 	SpringArmComponent->SetupAttachment(GetRootComponent());
-	/*
-		данное условие не позволит нашей камере поворачиваться
-		в момент поворота персонажа.В жанре Top - Down Shooter,
-		камера обычно находится статично над игроком.
-	*/
+
 	SpringArmComponent->SetUsingAbsoluteRotation(true);
 	SpringArmComponent->TargetArmLength = ArmLength;
-	/*
-		структура FRotator хранит аргументы в следующей последовательности:
-		Pitch, Yaw, Roll.
-		Так как нам необходимо определить значения по оси Y, мы устанавливаем Pitch аргумент.
-	*/
+
 	SpringArmComponent->SetRelativeRotation(FRotator(YRotation, 0.0f, 0.0f));
 	SpringArmComponent->bDoCollisionTest = false;
 	SpringArmComponent->bEnableCameraLag = true;
@@ -36,20 +27,20 @@ ALMADefaultCharacter::ALMADefaultCharacter()
 	CameraComponent = CreateDefaultSubobject<UCameraComponent>("CameraComponent");
 	CameraComponent->SetupAttachment(SpringArmComponent);
 	CameraComponent->SetFieldOfView(FOV);
-	// данное условие запрещаем камере вращаться относительно SpringArmComponent.
+
 	CameraComponent->bUsePawnControlRotation = false;
 
-	// запретим нашему персонажу поворачиваться в сторону камеры
 	bUseControllerRotationPitch = false;
 	bUseControllerRotationYaw = false;
 	bUseControllerRotationRoll = false;
+	TargetArmLength = ArmLength; // РќР°С‡Р°Р»СЊРЅРѕРµ Р·РЅР°С‡РµРЅРёРµ РґР»СЏ РїРµСЂРµРјРµРЅРЅРѕР№ TargetArmLength
 }
 
 // Called when the game starts or when spawned
 void ALMADefaultCharacter::BeginPlay()
 {
 	Super::BeginPlay();
-	
+
 	if (CursorMaterial)
 	{
 		CurrentCursor = UGameplayStatics::SpawnDecalAtLocation(GetWorld(), CursorMaterial, CursorSize, FVector(0));
@@ -75,18 +66,17 @@ void ALMADefaultCharacter::Tick(float DeltaTime)
 	}
 }
 
+void ALMADefaultCharacter::MouseWheelZoom(float DeltaWheel)
+{
+	TargetArmLength = FMath::Clamp(SpringArmComponent->TargetArmLength - DeltaWheel * ZoomSpeed, MaxZoomInDistance, MaxZoomOutDistance);
+}
+
 // Called to bind functionality to input
 void ALMADefaultCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
-	/*
-		Для корректного бинда на созданные нами функции используется функция BindAxis,
-		которая в качестве первого аргумента принимает названия события, которое мы
-		объявляли в Project Settings > Engine > Input.
-		Второй аргумент – это объект в котором будет вызвано событие.
-		Третий – это ссылка на функцию, которая вызывается при получении данных с клавиатуры.
-	*/
+	PlayerInputComponent->BindAxis("MouseWheel", this, &ALMADefaultCharacter::MouseWheelZoom);
 	PlayerInputComponent->BindAxis("MoveForward", this, &ALMADefaultCharacter::MoveForward);
 	PlayerInputComponent->BindAxis("MoveRight", this, &ALMADefaultCharacter::MoveRight);
 }
@@ -100,4 +90,3 @@ void ALMADefaultCharacter::MoveRight(float Value)
 {
 	AddMovementInput(GetActorRightVector(), Value);
 }
-
